@@ -1,0 +1,81 @@
+{% extends 'photo/base.html' %}
+{% block title %}{{ album }}{% endblock %}
+{% block content %}
+<div class="container-fluid songs-container">
+
+    <div class="row">
+
+        <!-- Left Album Info -->
+        <div class="col-sm-4 col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <a href="{% url 'photo:detail' album.id %}">
+                        {% if album.album_logo %}
+                            <img src="{{ album.album_logo.url }}" class="img-responsive">
+                        {% else %}
+                            <h3>No image to display</h3>
+                        {% endif %}
+                    </a>
+                    <h1>{{ album.album_title }} </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Song Info -->
+        <div class="col-sm-8 col-md-9">
+
+            <ul class="nav nav-pills" style="margin-bottom: 10px;">
+                <li role="presentation" class="active"><a href="{% url 'photo:index' %}">All Albums</a></li>
+                <li role="presentation"><a href="{% url 'photo:create_picture' album.id %}">Add New Photo</a></li>
+            </ul>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <h3>All Photos</h3>
+
+                    {% if error_message %}
+                        <p><strong>{{ error_message }}</strong></p>
+                    {% endif %}
+
+                        {% for song in album.picture_set.all %}
+
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="thumbnail">
+                                    <a href="{ song.pic_file.url }">
+                                        <img src="{{ song.pic_file.url }}" class="img-responsive" style="height:200px;width:512px;">
+                                    </a>
+                                    <div class="caption">
+                                        <h2>{{ song.pic_title }}</h2>
+
+                                        <!-- View Details -->
+                                        <a target="_blank" href="{{ song.pic_file.url }}" class="btn btn-primary btn-sm" role="button">View</a>
+                                        <form action="{% url 'photo:delete_pic' album.id song.id %}" method="post" style="display: inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="song_id" value="{{ song.id }}" />
+                                                <button type="submit" class="btn btn-default btn-sm">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                            </form>
+                                            <a href="{% url 'photo:favorite' song.id %}" class="btn btn-default btn-sm btn-favorite" role="button">
+                                            <span class="glyphicon glyphicon-star {% if song.is_favorite %}active{% endif %}"></span>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
